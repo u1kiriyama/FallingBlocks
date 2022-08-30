@@ -6,7 +6,7 @@
 
 #define fieldHeight 10
 #define fieldWidth 20
-#define dropcnt 3
+#define dropcnt 10
 
 using namespace std;
 
@@ -15,6 +15,7 @@ class Parts{
     int height, width;
     int BottomPos = 3;
     int LeftPos = 6;
+    bool alive = true;
 
     vector<vector<int>> shapeOfParts;
     Parts(vector<vector<int>> shape){
@@ -22,8 +23,14 @@ class Parts{
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
     }
+    ~Parts(){
+        cout << "Block landed." << endl;
+    }
     void clkwise(){}
     void counterclkwize(){}
+    void aliveCheck(){
+        if (BottomPos == fieldHeight-2) alive = false; // -2 is for debug
+    }
 };
 
 // shape of blocks
@@ -39,48 +46,11 @@ class Draw{
     public:
     int cnt = 0;
     vector<vector<int>>field ;
-    /*
-    vector<vector<int>>field = 
-    {
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    };
-    */
     //vector<vector<int>> field(fieldHeight, vector<int>(fieldWidth,0));
     // todo usingを使ってvectorのエイリアスをつくり、短く表記できるようにする。
     Draw()
-    :field(
-    {
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    }
-    )
     {
         mkZeroField();
-        /*
-        for (int i = 0; i < fieldHeight; i++) {
-            for (int j = 0; j < fieldWidth; j++) {
-                cout << field[i][j] ;
-            }
-            cout << endl;
-        }
-        */
         cout << "--------------------" << endl;
     }
 
@@ -102,13 +72,13 @@ class Draw{
     }
 
     void drawDisp(Parts &parts) {
-        //field[cnt][5]=1;
+        mkZeroField();
+
         for (int x = 0; x < parts.width; x++) {
             for (int y = 0; y < parts.height; y++) {
-                field[parts.BottomPos-y+cnt][parts.LeftPos+x] = parts.shapeOfParts[y][x];
+                field[parts.BottomPos-y][parts.LeftPos+x] = parts.shapeOfParts[y][x];
             }
         }
-        
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 cout << field[i][j] ;
@@ -119,6 +89,8 @@ class Draw{
         //cnt++;
         cout << "cnt : " << cnt << endl;
     }
+
+    // todo 揃ったら消すメソッド
 };
 
 int main() {
@@ -127,12 +99,16 @@ int main() {
 
     Draw draw;
     draw.drawDisp(totsu); // todo totsu -> empty
-    for (int i = 0; i < dropcnt; i++) {
+    for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
         //system("reset");
         draw.mkZeroField(); // todo piledBlock 2dim vecを作ってそれに変更
         draw.drawDisp(totsu);
         draw.cnt++;
         cin.get();
+
+        totsu.BottomPos++;
+        totsu.aliveCheck();
+        cout << totsu.BottomPos << endl;
+        if (!totsu.alive) {break;}
     }
-    draw.cnt = 0;
 }
