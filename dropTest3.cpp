@@ -40,17 +40,22 @@ vector<vector<int>> shapeOfTotsu = {
   {0, 1, 0},
   {1, 1, 1},
 };
+vector<vector<int>> shapeOfBar = {
+    {1, 1, 1}
+};
 // 他の形も追加
 
 class Draw{
     public:
     int cnt = 0;
     vector<vector<int>>field ;
+    vector<vector<int>>piledField ;
     //vector<vector<int>> field(fieldHeight, vector<int>(fieldWidth,0));
     // todo usingを使ってvectorのエイリアスをつくり、短く表記できるようにする。
     Draw()
     {
         mkZeroField();
+        piledField = field;
         cout << "--------------------" << endl;
     }
 
@@ -71,9 +76,19 @@ class Draw{
         };
     }
 
-    void drawDisp(Parts &parts) {
-        mkZeroField();
+    void drawPiledField() {
+        for (int i = 0; i < fieldHeight; i++) {
+            for (int j = 0; j < fieldWidth; j++) {
+                cout << piledField[i][j] ;
+            }
+            cout << endl;
+        }
+        cout << "--------------------" << endl;
+    }
 
+    void drawDisp(Parts &parts) {
+        //mkZeroField();
+        field = piledField;
         for (int x = 0; x < parts.width; x++) {
             for (int y = 0; y < parts.height; y++) {
                 field[parts.BottomPos-y][parts.LeftPos+x] = parts.shapeOfParts[y][x];
@@ -94,21 +109,44 @@ class Draw{
 };
 
 int main() {
-    Parts totsu(shapeOfTotsu);
-    cout << "totsu height : " << totsu.height << endl;
-
     Draw draw;
-    draw.drawDisp(totsu); // todo totsu -> empty
-    for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
-        //system("reset");
-        draw.mkZeroField(); // todo piledBlock 2dim vecを作ってそれに変更
-        draw.drawDisp(totsu);
-        draw.cnt++;
-        cin.get();
+    int kind = 0;
+    while(1) {
+        /*
+        if (kind == 0) {
+        Parts block(shapeOfTotsu);
+        }else{
+        Parts block(shapeOfBar);
+        }
+        */
 
-        totsu.BottomPos++;
-        totsu.aliveCheck();
-        cout << totsu.BottomPos << endl;
-        if (!totsu.alive) {break;}
+        Parts block(shapeOfBar);
+        cout << "beginning of loop" << block.height << endl;
+
+        draw.drawDisp(block); // todo totsu -> empty
+        for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
+            //system("reset");
+            cout << "piledField" << endl;
+            draw.drawPiledField();
+            //draw.mkZeroField(); // todo piledBlock 2dim vecを作ってそれに変更
+            cout << "field" << endl;
+            draw.drawDisp(block);
+            draw.cnt++;
+
+            block.BottomPos++;
+            block.aliveCheck();
+            cout << "bottom : " << block.BottomPos << endl;
+            if (!block.alive) {
+                cout << "dead" << endl;
+                draw.piledField = draw.field;
+                cout << "piledField" << endl;
+                draw.drawPiledField();
+                draw.cnt = 0;
+                cout << "====================" << endl;
+                break;
+            }
+            cin.get();
+        }
+        kind++;
     }
 }
