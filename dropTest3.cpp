@@ -38,11 +38,7 @@ class Parts{
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
     }
-    /*
-    ~Parts(){
-        cout << "Block landed." << endl;
-    }
-    */
+
     void mkPartsField(){
         PartsField = zeroField;
         for (int x = 0; x < width; x++) {
@@ -79,32 +75,12 @@ class Draw{ // not good name
     int cnt = 0;
     vector<vector<int>>field;
     vector<vector<int>>piledField;
-    //vector<vector<int>> field(fieldHeight, vector<int>(fieldWidth,0));
-    // todo usingを使ってvectorのエイリアスをつくり、短く表記できるようにする。
     Draw()
     {
-        //mkZeroField();
         field = zeroField;
         piledField = zeroField;
-        //cout << "--Draw constructor--" << endl;
     }
-    /*
-    void mkZeroField() {
-        field = zeroField;
-    }
-    */
-   /*
-    void drawPiledField() {
-        for (int i = 0; i < fieldHeight; i++) {
-            for (int j = 0; j < fieldWidth; j++) {
-                cout << piledField[i][j] ;
-            }
-            cout << endl;
-        }
-        cout << "--------------------" << endl;
-    }
-    */
-
+    
     void drawField(vector<vector<int>>field) {
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
@@ -114,25 +90,6 @@ class Draw{ // not good name
         }
         cout << "--------------------" << endl;
 
-    }
-    
-    void drawDisp(Parts &parts) {
-        //mkZeroField();
-        field = piledField;
-        for (int x = 0; x < parts.width; x++) {
-            for (int y = 0; y < parts.height; y++) {
-                field[parts.BottomPos-y][parts.LeftPos+x] = parts.shapeOfParts[y][x];
-            }
-        }
-        for (int i = 0; i < fieldHeight; i++) {
-            for (int j = 0; j < fieldWidth; j++) {
-                cout << field[i][j] ;
-            }
-            cout << endl;
-        }
-        cout << "--------------------" << endl;
-        //cnt++;
-        cout << "cnt : " << cnt << endl;
     }
 
     void mergeField(vector<vector<int>>partsField) {
@@ -146,25 +103,7 @@ class Draw{ // not good name
     void findColision(){
 
     }
-
 };
-
-/*
-class FieldCtl(){
-    vector<vector<int>>piledField;
-
-    public:
-    // find colsion
-
-    // make piedField
-    setPiledField(){
-        piledField = Draw::field;
-    }
-
-    // 揃ったら消すメソッド
-
-};
-*/
 
 int main() {
     Draw draw;
@@ -181,15 +120,7 @@ int main() {
         
         Parts block(shapeOfBlock);
 
-        //cout << "beginning of loop" << endl;
-        //draw.drawDisp(block); // todo totsu -> empty
         for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
-            //system("reset"); // "clear" work?
-            //cout << "piledField" << endl;
-            //draw.drawPiledField();
-            //draw.mkZeroField(); // todo piledBlock 2dim vecを作ってそれに変更
-            //cout << "field" << endl;
-            //draw.drawDisp(block);
             cout << "piledField" << endl;
             draw.drawField(draw.piledField);
             cout << "partsField" << endl;
@@ -202,12 +133,9 @@ int main() {
 
             block.BottomPos++;
             block.aliveCheck();
-            //cout << "bottom : " << block.BottomPos << endl;
             if (!block.alive) {
                 cout << "dead" << endl;
                 draw.piledField = draw.field; // make setter?
-                //cout << "piledField" << endl;
-                //draw.drawPiledField();
                 draw.cnt = 0;
                 cout << "====================" << endl;
                 break;
