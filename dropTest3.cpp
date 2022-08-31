@@ -69,19 +69,24 @@ class Parts{
             BottomPos++;
         }
     }
-    void toBottom(){}
+    void toBottom(){
+        /*
+        while (BottomPos != fieldHeight - 1) {
+            BottomPos++;
+            cout << "BtottomPos" << BottomPos << endl;
+        }
+        */
+        //alive = false;
+    }
     
     void findCollision(vector<vector<int>>field){
         // if not collide, return true
         // if collide, return false
-        cout << "w, h : " << width << ", " << height << endl;
         if (BottomPos + 0 == fieldHeight) {
-            cout << "touched floor" << endl;
             alive = false;
             return;
         }
         for (int i = 0; i < width; i++) {
-            cout << i << " Bottom, Left :" << BottomPos << ", " << LeftPos << endl;
             if (field[BottomPos + 0][LeftPos + i] != 0) {
                 alive = false;
                 return;
@@ -132,8 +137,8 @@ class Draw{ // not good name
     }
 };
 
-int moveBlock(Parts &parts){
-    cout << "[d]own, [r]ight, [l]eft : ";
+char moveBlock(Parts &parts){
+    cout << "[d]own, [r]ight, [l]eft, [b]ottom : ";
     char c;
     while(1) {
         if (kbhit()) {
@@ -145,14 +150,14 @@ int moveBlock(Parts &parts){
                 parts.toLeft();
             }else if (c == 'r') {
                 parts.toRight();
+            }else if (c == 'b') {
+                //parts.toBottom();
             }
             break;
-            //printf("the key was : %c\n", getchar());
         }
     usleep(10 * 1000);
     }
-
-    return 0;
+    return c;
 }
 
 int main() {
@@ -160,8 +165,8 @@ int main() {
 
     int kind = 0;
     while(1) {
-        bool breakflag = false;
         vector<vector<int>>shapeOfBlock;
+        bool breakflag = false;
         
         if (kind == 0) {
             shapeOfBlock = shapeOfTotsu;
@@ -170,13 +175,15 @@ int main() {
         }
         
         Parts block(shapeOfBlock);
-        /*
-        block.findCollision(draw.field);
-        if (!block.alive) {
-            cout << "GAME OVER!" << endl;
-            break;
-        }
-        */
+
+                block.findCollision(draw.piledField);
+                if (!block.alive) {
+                    cout << "dead" << endl;
+                    draw.piledField = draw.field; // make setter?
+                    cout << "====================" << endl;
+                    //breakflag = true;
+                    break;
+                }
         cout << "piledField" << endl;
         draw.drawField(draw.piledField);
         cout << "partsField" << endl;
@@ -188,53 +195,33 @@ int main() {
 
         while(1){
             block.findCollision(draw.piledField);
-            /*
-            if (!block.alive) {
-                cout << "GAME OVER!" << endl;
+            char c = moveBlock(block);
+            do {
+                if (c == 'b') {
+                    block.down();
+                }
+                block.findCollision(draw.piledField);
+                if (!block.alive) {
+                    cout << "dead" << endl;
+                    draw.piledField = draw.field; // make setter?
+                    cout << "====================" << endl;
+                    breakflag = true;
+                    break;
+                }
+                block.mkPartsField();
+                draw.mergeField(block.PartsField);
+            } while(c == 'b');
+            if (breakflag) {
                 break;
             }
-            */
-            moveBlock(block);
-            cout << "alive : " << block.alive << endl;
-            cout << "BottomPos : " << block.BottomPos << endl;
-            block.findCollision(draw.piledField);
-            if (!block.alive) {
-                cout << "dead" << endl;
-                draw.piledField = draw.field; // make setter?
-                //draw.cnt = 0;
-                cout << "====================" << endl;
-                breakflag = true;
-                break;
-            }
-
 
             cout << "piledField" << endl;
             draw.drawField(draw.piledField);
             cout << "partsField" << endl;
-            block.mkPartsField();
             draw.drawField(block.PartsField);
             cout << "mergedField" << endl;
-            draw.mergeField(block.PartsField);
             draw.drawField(draw.field);
 
-            //block.findCollision(draw.field);
-            //draw.cnt++;
-            /*
-            if (block.alive) {
-                moveBlock(block);
-            }
-            */
-            //block.BottomPos++;
-            //block.aliveCheck();
-            /*
-            if (!block.alive) {
-                cout << "dead" << endl;
-                draw.piledField = draw.field; // make setter?
-                //draw.cnt = 0;
-                cout << "====================" << endl;
-                break;
-            }
-            */
             //cin.get();
         }
         kind++;
