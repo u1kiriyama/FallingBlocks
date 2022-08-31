@@ -10,7 +10,7 @@
 
 using namespace std;
 
-vector<vector<int>>zeroField =
+const vector<vector<int>>zeroField =
 {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -38,9 +38,11 @@ class Parts{
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
     }
+    /*
     ~Parts(){
         cout << "Block landed." << endl;
     }
+    */
     void mkPartsField(){
         PartsField = zeroField;
         for (int x = 0; x < width; x++) {
@@ -51,7 +53,10 @@ class Parts{
 
     }
     void clkwise(){}
-    void counterclkwize(){}
+    void toLeft(){}
+    void toRight(){}
+    void down(){}
+    void toBottom(){}
     void aliveCheck(){
         if (BottomPos == fieldHeight-2) alive = false; // -2 is for debug
     }
@@ -78,15 +83,17 @@ class Draw{ // not good name
     // todo usingを使ってvectorのエイリアスをつくり、短く表記できるようにする。
     Draw()
     {
-        mkZeroField();
-        piledField = field;
-        cout << "--Draw constructor--" << endl;
+        //mkZeroField();
+        field = zeroField;
+        piledField = zeroField;
+        //cout << "--Draw constructor--" << endl;
     }
-
+    /*
     void mkZeroField() {
         field = zeroField;
     }
-
+    */
+   /*
     void drawPiledField() {
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
@@ -96,6 +103,7 @@ class Draw{ // not good name
         }
         cout << "--------------------" << endl;
     }
+    */
 
     void drawField(vector<vector<int>>field) {
         for (int i = 0; i < fieldHeight; i++) {
@@ -107,7 +115,7 @@ class Draw{ // not good name
         cout << "--------------------" << endl;
 
     }
-
+    
     void drawDisp(Parts &parts) {
         //mkZeroField();
         field = piledField;
@@ -173,9 +181,8 @@ int main() {
         
         Parts block(shapeOfBlock);
 
-        cout << "beginning of loop" << endl;
-
-        draw.drawDisp(block); // todo totsu -> empty
+        //cout << "beginning of loop" << endl;
+        //draw.drawDisp(block); // todo totsu -> empty
         for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
             //system("reset"); // "clear" work?
             //cout << "piledField" << endl;
@@ -195,12 +202,12 @@ int main() {
 
             block.BottomPos++;
             block.aliveCheck();
-            cout << "bottom : " << block.BottomPos << endl;
+            //cout << "bottom : " << block.BottomPos << endl;
             if (!block.alive) {
                 cout << "dead" << endl;
                 draw.piledField = draw.field; // make setter?
-                cout << "piledField" << endl;
-                draw.drawPiledField();
+                //cout << "piledField" << endl;
+                //draw.drawPiledField();
                 draw.cnt = 0;
                 cout << "====================" << endl;
                 break;
