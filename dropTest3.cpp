@@ -10,12 +10,27 @@
 
 using namespace std;
 
+vector<vector<int>>zeroField =
+{
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+};
+
 class Parts{
     public:
     int height, width;
     int BottomPos = 3;
     int LeftPos = 6;
     bool alive = true;
+    vector<vector<int>>PartsField;
 
     vector<vector<int>> shapeOfParts;
     Parts(vector<vector<int>> shape){
@@ -25,6 +40,15 @@ class Parts{
     }
     ~Parts(){
         cout << "Block landed." << endl;
+    }
+    void mkPartsField(){
+        PartsField = zeroField;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                PartsField[BottomPos-y][LeftPos+x] = shapeOfParts[y][x];
+            }
+        }
+
     }
     void clkwise(){}
     void counterclkwize(){}
@@ -45,35 +69,22 @@ vector<vector<int>> shapeOfBar = {
 };
 // 他の形も追加
 
-class Draw{
+class Draw{ // not good name
     public:
     int cnt = 0;
-    vector<vector<int>>field ;
-    vector<vector<int>>piledField ;
+    vector<vector<int>>field;
+    vector<vector<int>>piledField;
     //vector<vector<int>> field(fieldHeight, vector<int>(fieldWidth,0));
     // todo usingを使ってvectorのエイリアスをつくり、短く表記できるようにする。
     Draw()
     {
         mkZeroField();
         piledField = field;
-        cout << "--------------------" << endl;
+        cout << "--Draw constructor--" << endl;
     }
 
     void mkZeroField() {
-        //vector<vector<int>>field = 
-        field = 
-        {
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-        };
+        field = zeroField;
     }
 
     void drawPiledField() {
@@ -84,6 +95,17 @@ class Draw{
             cout << endl;
         }
         cout << "--------------------" << endl;
+    }
+
+    void drawField(vector<vector<int>>field) {
+        for (int i = 0; i < fieldHeight; i++) {
+            for (int j = 0; j < fieldWidth; j++) {
+                cout << field[i][j] ;
+            }
+            cout << endl;
+        }
+        cout << "--------------------" << endl;
+
     }
 
     void drawDisp(Parts &parts) {
@@ -105,32 +127,70 @@ class Draw{
         cout << "cnt : " << cnt << endl;
     }
 
-    // todo 揃ったら消すメソッド
+    void mergeField(vector<vector<int>>partsField) {
+        for (int i = 0; i < fieldHeight; i++) {
+            for (int j = 0; j < fieldWidth; j++) {
+                field[i][j] = piledField[i][j] + partsField[i][j];
+            }
+        }
+    }
+
+    void findColision(){
+
+    }
+
 };
+
+/*
+class FieldCtl(){
+    vector<vector<int>>piledField;
+
+    public:
+    // find colsion
+
+    // make piedField
+    setPiledField(){
+        piledField = Draw::field;
+    }
+
+    // 揃ったら消すメソッド
+
+};
+*/
 
 int main() {
     Draw draw;
+
     int kind = 0;
     while(1) {
-        /*
+        vector<vector<int>>shapeOfBlock;
+        
         if (kind == 0) {
-        Parts block(shapeOfTotsu);
+            shapeOfBlock = shapeOfTotsu;
         }else{
-        Parts block(shapeOfBar);
+            shapeOfBlock = shapeOfBar;
         }
-        */
+        
+        Parts block(shapeOfBlock);
 
-        Parts block(shapeOfBar);
-        cout << "beginning of loop" << block.height << endl;
+        cout << "beginning of loop" << endl;
 
         draw.drawDisp(block); // todo totsu -> empty
         for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
-            //system("reset");
-            cout << "piledField" << endl;
-            draw.drawPiledField();
+            //system("reset"); // "clear" work?
+            //cout << "piledField" << endl;
+            //draw.drawPiledField();
             //draw.mkZeroField(); // todo piledBlock 2dim vecを作ってそれに変更
-            cout << "field" << endl;
-            draw.drawDisp(block);
+            //cout << "field" << endl;
+            //draw.drawDisp(block);
+            cout << "piledField" << endl;
+            draw.drawField(draw.piledField);
+            cout << "partsField" << endl;
+            block.mkPartsField();
+            draw.drawField(block.PartsField);
+            cout << "mergedField" << endl;
+            draw.mergeField(block.PartsField);
+            draw.drawField(draw.field);
             draw.cnt++;
 
             block.BottomPos++;
@@ -138,7 +198,7 @@ int main() {
             cout << "bottom : " << block.BottomPos << endl;
             if (!block.alive) {
                 cout << "dead" << endl;
-                draw.piledField = draw.field;
+                draw.piledField = draw.field; // make setter?
                 cout << "piledField" << endl;
                 draw.drawPiledField();
                 draw.cnt = 0;
