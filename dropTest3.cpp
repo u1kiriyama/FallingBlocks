@@ -27,7 +27,7 @@ const vector<vector<int>>zeroField =
 class Parts{
     public:
     int height, width;
-    int BottomPos = 3;
+    int BottomPos = 1;
     int LeftPos = 6;
     bool alive = true;
     vector<vector<int>>PartsField;
@@ -53,8 +53,20 @@ class Parts{
     void toRight(){}
     void down(){}
     void toBottom(){}
-    void aliveCheck(){
-        if (BottomPos == fieldHeight-2) alive = false; // -2 is for debug
+    
+    void findCollision(vector<vector<int>>field){
+        // if not collide, return true
+        // if collide, return false
+        if (BottomPos + 1 == fieldHeight) {
+            alive = false;
+            return;
+        }
+        for (int i = 0; i < width; i++) {
+            if (field[BottomPos+1][LeftPos+i] != 0) {
+                alive = false;
+                return;
+            }
+        }
     }
 };
 
@@ -89,7 +101,6 @@ class Draw{ // not good name
             cout << endl;
         }
         cout << "--------------------" << endl;
-
     }
 
     void mergeField(vector<vector<int>>partsField) {
@@ -98,10 +109,6 @@ class Draw{ // not good name
                 field[i][j] = piledField[i][j] + partsField[i][j];
             }
         }
-    }
-
-    void findColision(){
-
     }
 };
 
@@ -119,6 +126,11 @@ int main() {
         }
         
         Parts block(shapeOfBlock);
+        block.findCollision(draw.field);
+        if (!block.alive) {
+            cout << "GAME OVER!" << endl;
+            break;
+        }
 
         for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
             cout << "piledField" << endl;
@@ -129,10 +141,11 @@ int main() {
             cout << "mergedField" << endl;
             draw.mergeField(block.PartsField);
             draw.drawField(draw.field);
-            draw.cnt++;
 
+            block.findCollision(draw.field);
+            draw.cnt++;
             block.BottomPos++;
-            block.aliveCheck();
+            //block.aliveCheck();
             if (!block.alive) {
                 cout << "dead" << endl;
                 draw.piledField = draw.field; // make setter?
