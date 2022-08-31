@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include "kbhit.hpp"
 
 #define fieldHeight 10
 #define fieldWidth 20
@@ -49,9 +50,21 @@ class Parts{
 
     }
     void clkwise(){}
-    void toLeft(){}
-    void toRight(){}
-    void down(){}
+    void toLeft(){
+        cout << "left edge : " << LeftPos << endl;
+        if (LeftPos > 0) {
+            LeftPos--;
+        }
+    }
+    void toRight(){
+        cout << "right edge : " << LeftPos+width;
+        if (LeftPos+width < fieldWidth) {
+            LeftPos++;
+        }
+    }
+    void down(){
+        BottomPos++;
+    }
     void toBottom(){}
     
     void findCollision(vector<vector<int>>field){
@@ -84,7 +97,7 @@ vector<vector<int>> shapeOfBar = {
 
 class Draw{ // not good name
     public:
-    int cnt = 0;
+    //int cnt = 0;
     vector<vector<int>>field;
     vector<vector<int>>piledField;
     Draw()
@@ -112,6 +125,29 @@ class Draw{ // not good name
     }
 };
 
+int moveBlock(Parts &parts){
+    cout << "[d]own, [r]ight, [l]eft : ";
+    char c;
+    while(1) {
+        if (kbhit()) {
+            cout << endl;
+            c = getchar();
+            if (c == 'd') {
+                parts.down();
+            }else if (c == 'l') {
+                parts.toLeft();
+            }else if (c == 'r') {
+                parts.toRight();
+            }
+            break;
+            //printf("the key was : %c\n", getchar());
+        }
+    usleep(10 * 1000);
+    }
+
+    return 0;
+}
+
 int main() {
     Draw draw;
 
@@ -132,7 +168,7 @@ int main() {
             break;
         }
 
-        for (int i = 0; i < dropcnt; i++) { // dropcnt could be fieldHeight.
+        while(1){
             cout << "piledField" << endl;
             draw.drawField(draw.piledField);
             cout << "partsField" << endl;
@@ -143,17 +179,20 @@ int main() {
             draw.drawField(draw.field);
 
             block.findCollision(draw.field);
-            draw.cnt++;
-            block.BottomPos++;
+            //draw.cnt++;
+            if (block.alive) {
+                moveBlock(block);
+            }
+            //block.BottomPos++;
             //block.aliveCheck();
             if (!block.alive) {
                 cout << "dead" << endl;
                 draw.piledField = draw.field; // make setter?
-                draw.cnt = 0;
+                //draw.cnt = 0;
                 cout << "====================" << endl;
                 break;
             }
-            cin.get();
+            //cin.get();
         }
         kind++;
     }
