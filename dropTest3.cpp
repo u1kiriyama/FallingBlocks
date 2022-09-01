@@ -34,13 +34,14 @@ class Parts{
     vector<vector<int>>PartsField;
 
     vector<vector<int>> shapeOfParts;
-    Parts(vector<vector<int>> shape){
+    Parts(vector<vector<int>> &shape){
         shapeOfParts = shape;
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
     }
 
     void mkPartsField(){
+        cout << "mkPartsField Bottom, Left ; " << BottomPos << ", " << LeftPos << endl;
         PartsField = zeroField;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -50,17 +51,21 @@ class Parts{
 
     }
     void clkwise(){}
-    void toLeft(){
-        cout << "left edge : " << LeftPos << endl;
+    void toLeft(vector<vector<int>>&piledField){
         if (LeftPos > 0) {
-            LeftPos--;
+            if (piledField[BottomPos][LeftPos-1] == 0) {
+                LeftPos--;
+            }
         }
+        cout << "left edge : " << LeftPos << endl;
     }
-    void toRight(){
-        cout << "right edge : " << LeftPos+width;
+    void toRight(vector<vector<int>>&piledField){
         if (LeftPos+width < fieldWidth) {
-            LeftPos++;
+            if (piledField[BottomPos][LeftPos+width-1+1] == 0) {
+                LeftPos++;
+            }
         }
+        cout << "right edge : " << LeftPos+width-1 << endl;
     }
     void down(){
         if (BottomPos == fieldHeight) {
@@ -70,16 +75,34 @@ class Parts{
         }
     }
     void toBottom(){
-        /*
-        while (BottomPos != fieldHeight - 1) {
-            BottomPos++;
-            cout << "BtottomPos" << BottomPos << endl;
-        }
-        */
-        //alive = false;
+        // not used. down is called repeatedly instead.
     }
+
+    char moveBlock(vector<vector<int>>&piledField){
+        cout << "[d]own, [r]ight, [l]eft, [b]ottom : ";
+        char c;
+        while(1) {
+            if (kbhit()) {
+                cout << endl;
+                c = getchar();
+                if (c == 'd') {
+                    down();
+                }else if (c == 'l') {
+                    toLeft(piledField);
+                }else if (c == 'r') {
+                    toRight(piledField);
+                }else if (c == 'b') {
+                    //parts.toBottom();
+                }
+                break;
+            }
+        usleep(10 * 1000);
+        }
+        return c;
+    }
+
     
-    void findCollision(vector<vector<int>>field){
+    void findCollision(vector<vector<int>>&field){
         // if not collide, return true
         // if collide, return false
         if (BottomPos + 0 == fieldHeight) {
@@ -118,7 +141,7 @@ class Draw{ // not good name
         piledField = zeroField;
     }
     
-    void drawField(vector<vector<int>>field) {
+    void drawField(vector<vector<int>>&field) {
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 cout << field[i][j] ;
@@ -128,7 +151,7 @@ class Draw{ // not good name
         cout << "--------------------" << endl;
     }
 
-    void mergeField(vector<vector<int>>partsField) {
+    void mergeField(vector<vector<int>>&partsField) {
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 field[i][j] = piledField[i][j] + partsField[i][j];
@@ -136,29 +159,6 @@ class Draw{ // not good name
         }
     }
 };
-
-char moveBlock(Parts &parts){
-    cout << "[d]own, [r]ight, [l]eft, [b]ottom : ";
-    char c;
-    while(1) {
-        if (kbhit()) {
-            cout << endl;
-            c = getchar();
-            if (c == 'd') {
-                parts.down();
-            }else if (c == 'l') {
-                parts.toLeft();
-            }else if (c == 'r') {
-                parts.toRight();
-            }else if (c == 'b') {
-                //parts.toBottom();
-            }
-            break;
-        }
-    usleep(10 * 1000);
-    }
-    return c;
-}
 
 int main() {
     Draw draw;
@@ -176,14 +176,15 @@ int main() {
         
         Parts block(shapeOfBlock);
 
-                block.findCollision(draw.piledField);
-                if (!block.alive) {
-                    cout << "dead" << endl;
-                    draw.piledField = draw.field; // make setter?
-                    cout << "====================" << endl;
-                    //breakflag = true;
-                    break;
-                }
+        // if no space to drop, break here and finish game.
+        block.findCollision(draw.piledField);
+        if (!block.alive) {
+            cout << "dead" << endl;
+            draw.piledField = draw.field; // make setter?
+            cout << "====================" << endl;
+            //breakflag = true;
+            break;
+        }
         cout << "piledField" << endl;
         draw.drawField(draw.piledField);
         cout << "partsField" << endl;
@@ -195,7 +196,7 @@ int main() {
 
         while(1){
             block.findCollision(draw.piledField);
-            char c = moveBlock(block);
+            char c = block.moveBlock(draw.piledField);
             do {
                 if (c == 'b') {
                     block.down();
