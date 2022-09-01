@@ -53,13 +53,15 @@ class Parts{
     void rotate(){
         cout << "here" << endl;
         //vector<vector<int>>tmp;
-        int tmp[width][height];
+        vector<vector<int>>tmp(width, vector<int>(height));
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 tmp[x][y] = shapeOfParts[y][x];
             }
         }
         shapeOfParts = tmp;
+        height = shapeOfParts.size();
+        width = shapeOfParts[0].size();
     }
 
     void toLeft(vector<vector<int>>&piledField){
