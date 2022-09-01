@@ -11,6 +11,8 @@
 
 using namespace std;
 
+vector<vector<int>>zeroField(fieldHeight, vector<int>(fieldWidth, 0));
+/*
 const vector<vector<int>>zeroField =
 {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -24,20 +26,23 @@ const vector<vector<int>>zeroField =
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 };
+*/
 
 class Parts{
     public:
     int height, width;
-    int BottomPos = 1;
+    int BottomPos = 0;
     int LeftPos = 6;
     bool alive = true;
     vector<vector<int>>PartsField;
+    vector<vector<int>>simPartsField;
 
     vector<vector<int>> shapeOfParts;
     Parts(vector<vector<int>> &shape){
         shapeOfParts = shape;
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
+        BottomPos = height-1;
     }
 
     void mkPartsField(){
@@ -50,24 +55,44 @@ class Parts{
         }
     }
 
-    void rotate(){
-        cout << "here" << endl;
+    void setSimPartsField(){
+        simPartsField = PartsField;
+    }
+
+    void rotate(vector<vector<int>>&piledField){
         //vector<vector<int>>tmp;
         vector<vector<int>>tmp(width, vector<int>(height));
+        // rotation
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                tmp[x][y] = shapeOfParts[y][x];
+                tmp[x][height-1-y] = shapeOfParts[y][x];
             }
         }
-        shapeOfParts = tmp;
-        height = shapeOfParts.size();
-        width = shapeOfParts[0].size();
+        // ceiling check
+        if (BottomPos+1 < tmp.size()) {
+            cout << "rotation forbidden" << endl;
+            BottomPos = tmp.size() - 1;
+        }
+        // right wall check
+        if (LeftPos+tmp[0].size() > fieldWidth) {
+            cout << "collide right wall" << endl;
+            LeftPos = fieldWidth - tmp[0].size();
+        }
+        if (collisionCheck(piledField, tmp)){
+            shapeOfParts = tmp;
+            PartsField = simPartsField;
+            height = shapeOfParts.size();
+            width = shapeOfParts[0].size();
+        }
     }
 
     void toLeft(vector<vector<int>>&piledField){
         if (LeftPos > 0) {
             if (piledField[BottomPos][LeftPos-1] == 0) {
                 LeftPos--;
+                if (!collisionCheck(piledField, shapeOfParts)){
+                    LeftPos++;
+                }
             }
         }
         cout << "left edge : " << LeftPos << endl;
@@ -76,6 +101,9 @@ class Parts{
         if (LeftPos+width < fieldWidth) {
             if (piledField[BottomPos][LeftPos+width-1+1] == 0) {
                 LeftPos++;
+                if (!collisionCheck(piledField, shapeOfParts)){
+                    LeftPos--;
+                }
             }
         }
         cout << "right edge : " << LeftPos+width-1 << endl;
@@ -92,7 +120,8 @@ class Parts{
         // Do not erase this function for readability.
     }
 
-    char moveBlock(vector<vector<int>>&piledField){
+    char moveBlock(vector<vector<int>>&piledField, vector<vector<int>>&field){
+        setSimPartsField();
         cout << "fall:<space> rotate:UP DOWN RIGHT LEFT > ";
         char c = '\0';
         while(1) {
@@ -104,7 +133,7 @@ class Parts{
                     char c3 = getchar();
 
                     if (int(c3) == 65) {
-                        rotate();
+                        rotate(piledField);
                     }else if (int(c3) == 66) {
                         down();
                     }else if (int(c3) == 67) {
@@ -121,27 +150,29 @@ class Parts{
                     c = c1;
                 }
                 break;
-                /*
-                if (c == 'd') {
-                    down();
-                }else if (c == 'l') {
-                    toLeft(piledField);
-                }else if (c == 'r') {
-                    toRight(piledField);
-                }else if (c == 'r') {
-                    rotate();
-                }
-                }else if (c == 'b') {
-                    //parts.toBottom();
-                }
-                break;
-                */
             }
-        //usleep(10 * 1000);
         }
         return c; // if fall c = ' '(space), otherwise null.
     }
 
+    bool collisionCheck(vector<vector<int>>&piledField, vector<vector<int>>&tmp) {
+        simPartsField = zeroField;
+        for (int x = 0; x < tmp[0].size(); x++) {
+            for (int y = 0; y < tmp.size(); y++) {
+                simPartsField[BottomPos-y][LeftPos+x] = tmp[y][x];
+            }
+        }
+
+        for (int i = 0; i < fieldHeight; i++) {
+            for (int j = 0; j < fieldWidth; j++) {
+                if (piledField[i][j] + simPartsField[i][j] == 2) {
+                    cout << "cannot rotate" << endl;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     
     void findCollision(vector<vector<int>>&field){
         // if not collide, return true
@@ -237,7 +268,7 @@ int main() {
 
         while(1){
             block.findCollision(draw.piledField);
-            char c = block.moveBlock(draw.piledField);
+            char c = block.moveBlock(draw.piledField, draw.field);
             do {
                 if (c == ' ') {
                     block.down();
@@ -250,7 +281,9 @@ int main() {
                     breakflag = true;
                     break;
                 }
+                cout << "before mkPartsField" << endl;
                 block.mkPartsField();
+                //block.collisionCheck();
                 draw.mergeField(block.PartsField);
             } while(c == ' ');
             if (breakflag) {

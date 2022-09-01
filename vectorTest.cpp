@@ -34,6 +34,13 @@ int main() {
         }
     }
 
+    std::cout << "zero vector" << std::endl;
+    std::vector<std::vector<int>>zero(3, std::vector<int>(3, 0));
+    for (int i = 0; i < zero.size(); i++) {
+        for (int j = 0; j < zero[0].size(); j++) {
+            std::cout << zero[i][j] << std::endl;
+        }
+    }
 
     return 0;
 }
