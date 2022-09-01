@@ -48,9 +48,20 @@ class Parts{
                 PartsField[BottomPos-y][LeftPos+x] = shapeOfParts[y][x];
             }
         }
-
     }
-    void clkwise(){}
+
+    void rotate(){
+        cout << "here" << endl;
+        //vector<vector<int>>tmp;
+        int tmp[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                tmp[x][y] = shapeOfParts[y][x];
+            }
+        }
+        shapeOfParts = tmp;
+    }
+
     void toLeft(vector<vector<int>>&piledField){
         if (LeftPos > 0) {
             if (piledField[BottomPos][LeftPos-1] == 0) {
@@ -76,29 +87,57 @@ class Parts{
     }
     void toBottom(){
         // not used. down is called repeatedly instead.
+        // Do not erase this function for readability.
     }
 
     char moveBlock(vector<vector<int>>&piledField){
-        cout << "[d]own, [r]ight, [l]eft, [b]ottom : ";
-        char c;
+        cout << "fall:<space> rotate:UP DOWN RIGHT LEFT > ";
+        char c = '\0';
         while(1) {
             if (kbhit()) {
                 cout << endl;
-                c = getchar();
+                char c1 = getchar();
+                if (int(c1) == 0x1b) {
+                    getchar();
+                    char c3 = getchar();
+
+                    if (int(c3) == 65) {
+                        rotate();
+                    }else if (int(c3) == 66) {
+                        down();
+                    }else if (int(c3) == 67) {
+                        toRight(piledField);
+                    }else if (int(c3) == 68) {
+                        toLeft(piledField);
+                    }else{
+
+                    }
+                    break;
+                }
+                if (c1 == ' ') {
+                    // fall
+                    c = c1;
+                }
+                break;
+                /*
                 if (c == 'd') {
                     down();
                 }else if (c == 'l') {
                     toLeft(piledField);
                 }else if (c == 'r') {
                     toRight(piledField);
+                }else if (c == 'r') {
+                    rotate();
+                }
                 }else if (c == 'b') {
                     //parts.toBottom();
                 }
                 break;
+                */
             }
-        usleep(10 * 1000);
+        //usleep(10 * 1000);
         }
-        return c;
+        return c; // if fall c = ' '(space), otherwise null.
     }
 
     
@@ -198,7 +237,7 @@ int main() {
             block.findCollision(draw.piledField);
             char c = block.moveBlock(draw.piledField);
             do {
-                if (c == 'b') {
+                if (c == ' ') {
                     block.down();
                 }
                 block.findCollision(draw.piledField);
@@ -211,7 +250,7 @@ int main() {
                 }
                 block.mkPartsField();
                 draw.mergeField(block.PartsField);
-            } while(c == 'b');
+            } while(c == ' ');
             if (breakflag) {
                 break;
             }
