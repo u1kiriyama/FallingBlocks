@@ -12,21 +12,6 @@
 using namespace std;
 
 vector<vector<int>>zeroField(fieldHeight, vector<int>(fieldWidth, 0));
-/*
-const vector<vector<int>>zeroField =
-{
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-};
-*/
 
 class Parts{
     public:
@@ -38,15 +23,18 @@ class Parts{
     vector<vector<int>>simPartsField;
 
     vector<vector<int>> shapeOfParts;
-    Parts(vector<vector<int>> &shape){
+    Parts(vector<vector<int>> &shape, vector<vector<int>>&piledField){
         shapeOfParts = shape;
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
         BottomPos = height-1;
+        if (!collisionCheck(piledField, shapeOfParts)) {
+            alive = false;
+        }
     }
 
     void mkPartsField(){
-        cout << "mkPartsField Bottom, Left ; " << BottomPos << ", " << LeftPos << endl;
+        //cout << "mkPartsField Bottom, Left ; " << BottomPos << ", " << LeftPos << endl;
         PartsField = zeroField;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -70,7 +58,7 @@ class Parts{
         }
         // ceiling check
         if (BottomPos+1 < tmp.size()) {
-            cout << "rotation forbidden" << endl;
+            //cout << "rotation forbidden" << endl;
             BottomPos = tmp.size() - 1;
         }
         // right wall check
@@ -108,12 +96,20 @@ class Parts{
         }
         cout << "right edge : " << LeftPos+width-1 << endl;
     }
-    void down(){
+    void down(vector<vector<int>>&piledField){
+        BottomPos++;
+        alive = collisionCheck(piledField, shapeOfParts);
+        if (!alive) {
+            BottomPos--;
+        }
+        /*
         if (BottomPos == fieldHeight) {
             alive = false;
+        }
         }else{
             BottomPos++;
         }
+        */
     }
     void toBottom(){
         // not used. down is called repeatedly instead.
@@ -121,7 +117,7 @@ class Parts{
     }
 
     char moveBlock(vector<vector<int>>&piledField, vector<vector<int>>&field){
-        setSimPartsField();
+        //setSimPartsField();
         cout << "fall:<space> rotate:UP DOWN RIGHT LEFT > ";
         char c = '\0';
         while(1) {
@@ -135,7 +131,7 @@ class Parts{
                     if (int(c3) == 65) {
                         rotate(piledField);
                     }else if (int(c3) == 66) {
-                        down();
+                        down(piledField);
                     }else if (int(c3) == 67) {
                         toRight(piledField);
                     }else if (int(c3) == 68) {
@@ -156,6 +152,10 @@ class Parts{
     }
 
     bool collisionCheck(vector<vector<int>>&piledField, vector<vector<int>>&tmp) {
+        setSimPartsField();
+        if (BottomPos + 0 == fieldHeight) {
+            return false;
+        }
         simPartsField = zeroField;
         for (int x = 0; x < tmp[0].size(); x++) {
             for (int y = 0; y < tmp.size(); y++) {
@@ -166,7 +166,6 @@ class Parts{
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 if (piledField[i][j] + simPartsField[i][j] == 2) {
-                    cout << "cannot rotate" << endl;
                     return false;
                 }
             }
@@ -174,6 +173,7 @@ class Parts{
         return true;
     }
     
+    /*
     void findCollision(vector<vector<int>>&field){
         // if not collide, return true
         // if collide, return false
@@ -188,6 +188,7 @@ class Parts{
             }
         }
     }
+    */
 };
 
 // shape of blocks
@@ -202,7 +203,7 @@ vector<vector<int>> shapeOfBar = {
 };
 // 他の形も追加
 
-class Draw{ // not good name
+class Draw{ // not good name -> Board
     public:
     //int cnt = 0;
     vector<vector<int>>field;
@@ -246,16 +247,16 @@ int main() {
             shapeOfBlock = shapeOfBar;
         }
         
-        Parts block(shapeOfBlock);
+        Parts block(shapeOfBlock, draw.piledField);
 
         // if no space to drop, break here and finish game.
-        block.findCollision(draw.piledField);
+        //block.findCollision(draw.piledField);
         if (!block.alive) {
-            cout << "dead" << endl;
+            cout << " G A M E   O V E R " << endl;
             draw.piledField = draw.field; // make setter?
             cout << "====================" << endl;
             //breakflag = true;
-            break;
+            return 0;
         }
         cout << "piledField" << endl;
         draw.drawField(draw.piledField);
@@ -267,21 +268,20 @@ int main() {
         draw.drawField(draw.field);
 
         while(1){
-            block.findCollision(draw.piledField);
+            //block.findCollision(draw.piledField);
             char c = block.moveBlock(draw.piledField, draw.field);
             do {
                 if (c == ' ') {
-                    block.down();
+                    block.down(draw.piledField);
                 }
-                block.findCollision(draw.piledField);
+                //block.findCollision(draw.piledField);
                 if (!block.alive) {
-                    cout << "dead" << endl;
+                    //cout << "dead!" << endl;
                     draw.piledField = draw.field; // make setter?
                     cout << "====================" << endl;
                     breakflag = true;
                     break;
                 }
-                cout << "before mkPartsField" << endl;
                 block.mkPartsField();
                 //block.collisionCheck();
                 draw.mergeField(block.PartsField);
@@ -301,4 +301,5 @@ int main() {
         }
         kind++;
     }
+     return 0;
 }
