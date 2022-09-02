@@ -102,14 +102,6 @@ class Parts{
         if (!alive) {
             BottomPos--;
         }
-        /*
-        if (BottomPos == fieldHeight) {
-            alive = false;
-        }
-        }else{
-            BottomPos++;
-        }
-        */
     }
     void toBottom(){
         // not used. down is called repeatedly instead.
