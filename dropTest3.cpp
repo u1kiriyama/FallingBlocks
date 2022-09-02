@@ -172,23 +172,6 @@ class Parts{
         }
         return true;
     }
-    
-    /*
-    void findCollision(vector<vector<int>>&field){
-        // if not collide, return true
-        // if collide, return false
-        if (BottomPos + 0 == fieldHeight) {
-            alive = false;
-            return;
-        }
-        for (int i = 0; i < width; i++) {
-            if (field[BottomPos + 0][LeftPos + i] != 0) {
-                alive = false;
-                return;
-            }
-        }
-    }
-    */
 };
 
 // shape of blocks
