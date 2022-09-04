@@ -31,18 +31,15 @@ class Parts{
     }
 
     void mkPartsField(){
-        //cout << "mkPartsField Bottom, Left ; " << BottomPos << ", " << LeftPos << endl;
         partsField = zeroField;
         for (int x = 0; x < shapeOfParts[0].size(); x++) {
             for (int y = 0; y < shapeOfParts.size(); y++) {
                 partsField[BottomPos-y][LeftPos+x] = shapeOfParts[y][x];
             }
         }
-        cout << endl;
     }
 
     bool rotate(const vector<vector<int>>&piledField){
-        //vector<vector<int>>tmp;
         vector<vector<int>>tmp(width, vector<int>(height));
         // rotation
         for (int x = 0; x < width; x++) {
@@ -52,7 +49,7 @@ class Parts{
         }
 
         shapeOfParts = tmp;
-        cout << "shapeOfParts height:" << shapeOfParts.size() << ",width" << shapeOfParts[0].size() << endl; 
+        //cout << "shapeOfParts height:" << shapeOfParts.size() << ",width" << shapeOfParts[0].size() << endl; 
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
 
@@ -103,7 +100,7 @@ class Parts{
         char c = '\0';
         while(1) {
             if (kbhit()) {
-                cout << endl;
+                //cout << endl;
                 char c1 = getchar();
                 if (int(c1) == 0x1b) {
                     getchar();
@@ -191,6 +188,29 @@ class Draw{ // not good name -> Board
             }
         }
     }
+
+    bool deleteRow(vector<vector<int>>&piledField) {
+        //bool complete = true;
+        for (int x = 0; x < fieldWidth; x++) {
+            if (piledField[fieldHeight-1][x] == 0) {
+                //complete = false;
+                return false;
+            }
+        }
+        for (int y = fieldHeight-1; y > 0; y--) {
+            for (int x = 0; x < fieldWidth; x++) {
+                //cout << "y,x:" << y << "," << x << endl;
+                piledField[y][x] = piledField[y-1][x];
+            }
+        }
+        for (int x = 0; x < fieldWidth; x++) {
+            //cout << "y,x:" << y << "," << x << endl;
+            piledField[0][x] = 0;
+        }
+        drawField(piledField);
+        return true;
+    }
+
 };
 
 int main() {
@@ -215,6 +235,7 @@ int main() {
             cout << "====================" << endl;
             return 0;
         }
+
         block.mkPartsField();
         draw.mergeField(block.partsField);
 
@@ -224,15 +245,27 @@ int main() {
         draw.drawField(block.partsField);
         cout << "mergedField" << endl;
         draw.drawField(draw.field);
+        
+        if (draw.deleteRow(draw.piledField)) {
+            block.mkPartsField();
+            draw.mergeField(block.partsField);
+
+            cout << "piledField" << endl;
+            draw.drawField(draw.piledField);
+            cout << "partsField" << endl;
+            draw.drawField(block.partsField);
+            cout << "mergedField" << endl;
+            draw.drawField(draw.field);
+        }
 
         while(1){
             Parts simBlock = block;
             char c = simBlock.moveBlock(draw.piledField, draw.field);
+            cout << endl;
             do {
                 if (c == ' ') {
                     simBlock.down(draw.piledField);
                 }
-                //simBlock.alive = simBlock.collisionCheck(draw.piledField);
                 simBlock.collisionCheck(draw.piledField);
                 if (!simBlock.alive) {
                     cout << "dead!" << endl;
