@@ -21,7 +21,6 @@ class Parts{
     bool alive = true;
     bool moveOK = true;
     vector<vector<int>>partsField;
-    //vector<vector<int>>simPartsField;
 
     vector<vector<int>> shapeOfParts;
     Parts(vector<vector<int>> &shape, const vector<vector<int>>&piledField){
@@ -29,11 +28,6 @@ class Parts{
         height = shapeOfParts.size();
         width = shapeOfParts[0].size();
         BottomPos = height-1;
-        /*
-        if (!collisionCheck(piledField)) {
-            alive = false;
-        }
-        */
     }
 
     void mkPartsField(){
@@ -46,11 +40,6 @@ class Parts{
         }
         cout << endl;
     }
-    /*
-    void setSimPartsField(){
-        simPartsField = PartsField;
-    }
-    */
 
     bool rotate(const vector<vector<int>>&piledField){
         //vector<vector<int>>tmp;
@@ -61,15 +50,6 @@ class Parts{
                 tmp[x][height-1-y] = shapeOfParts[y][x];
             }
         }
-        /*
-        for (int i = 0; i < tmp.size(); i++) {
-            for (int j = 0; j <  tmp[0].size(); j++) {
-                cout << tmp[i][j] ;
-            }
-            cout << endl;
-        }
-        cout << "===" << endl;
-        */
 
         shapeOfParts = tmp;
         cout << "shapeOfParts height:" << shapeOfParts.size() << ",width" << shapeOfParts[0].size() << endl; 
@@ -93,11 +73,6 @@ class Parts{
         if (LeftPos > 0) {
             if (piledField[BottomPos][LeftPos-1] == 0) {
                 LeftPos--;
-                /*
-                if (!collisionCheck(piledField, shapeOfParts)){
-                    LeftPos++;
-                }
-                */
             }
         }
         cout << "left edge : " << LeftPos << endl;
@@ -106,11 +81,6 @@ class Parts{
         if (LeftPos+width < fieldWidth) {
             if (piledField[BottomPos][LeftPos+width-1+0] == 0) {
                 LeftPos++;
-                /*
-                if (!collisionCheck(piledField, shapeOfParts)){
-                    LeftPos--;
-                }
-                */
             }
         }
         cout << "right edge : " << LeftPos+width-1 << endl;
@@ -121,11 +91,6 @@ class Parts{
         if (!moveOK) {
             alive = false;
         }
-        /*
-        if (!alive) {
-            BottomPos--;
-        }
-        */
     }
     void toBottom(){
         // not used. down is called repeatedly instead.
@@ -164,11 +129,6 @@ class Parts{
                 break;
             }
         }
-        /*
-        if (!collisionCheck(piledField)) {
-            alive = false;
-        };
-        */
         return c; // if fall c = ' '(space), otherwise null.
     }
 
@@ -179,20 +139,11 @@ class Parts{
             return false;
         }
         mkPartsField();
-        /*
-        simPartsField = zeroField;
-        for (int x = 0; x < tmp[0].size(); x++) {
-            for (int y = 0; y < tmp.size(); y++) {
-                simPartsField[BottomPos-y][LeftPos+x] = tmp[y][x];
-            }
-        }
-        */
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 if (piledField[i][j] + partsField[i][j] == 2) {
                     cout << "collision error" << endl;
                     moveOK = false;
-                    //return;
                 }
             }
         }
@@ -258,13 +209,10 @@ int main() {
         
         Parts block(shapeOfBlock, draw.piledField);
         // if no space to drop, break here and finish game.
-        //block.findCollision(draw.piledField);
         block.collisionCheck(draw.piledField);
         if (!block.moveOK) {
             cout << " G A M E   O V E R " << endl;
-            //draw.piledField = draw.field; // make setter?
             cout << "====================" << endl;
-            //breakflag = true;
             return 0;
         }
         block.mkPartsField();
@@ -278,7 +226,6 @@ int main() {
         draw.drawField(draw.field);
 
         while(1){
-            //block.PartsFieldfindCollision(draw.piledField);
             Parts simBlock = block;
             char c = simBlock.moveBlock(draw.piledField, draw.field);
             do {
