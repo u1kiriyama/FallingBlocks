@@ -21,7 +21,6 @@ class Parts{
     int LeftPos = 6;
     bool alive = true;
     bool moveOK = true;
-    vector<vector<int>>partsField;
     vector<vector<int>>partsFieldColor;
     int shapeIndex;
 
@@ -35,11 +34,9 @@ class Parts{
     }
 
     void mkPartsField(){
-        partsField = zeroField;
         partsFieldColor = zeroField;
         for (int x = 0; x < shapeOfParts[0].size(); x++) {
             for (int y = 0; y < shapeOfParts.size(); y++) {
-                partsField[BottomPos-y][LeftPos+x] = shapeOfParts[y][x];
                 partsFieldColor[BottomPos-y][LeftPos+x] = (shapeIndex + 1) * shapeOfParts[y][x];
             }
         }
@@ -74,22 +71,12 @@ class Parts{
     void toLeft(const vector<vector<int>>&piledField){
         if (LeftPos > 0) {
             LeftPos--;
-            /*
-            if (piledField[BottomPos][LeftPos-1] == 0) {
-                LeftPos--;
-            }
-            */
         }
         cout << "left edge : " << LeftPos << endl;
     }
     void toRight(const vector<vector<int>>&piledField){
         if (LeftPos+width < fieldWidth) {
             LeftPos++;
-            /*
-            if (piledField[BottomPos][LeftPos+width-1+0] == 0) {
-                LeftPos++;
-            }
-            */
         }
         cout << "right edge : " << LeftPos+width-1 << endl;
     }
@@ -163,7 +150,6 @@ class Parts{
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 if (ZeroOnePiledField[i][j] + ZeroOnePartsField[i][j] > 1) {
-                    //cout << "collision error" << endl;
                     moveOK = false;
                 }
             }
@@ -237,15 +223,12 @@ vector<SHAPES>shapes = initShapes();
 
 class Draw{ // not good name -> Board
     public:
-    //int cnt = 0;
     vector<vector<int>>field;
     vector<vector<int>>piledField;
     vector<vector<int>>fieldColor;
     vector<vector<int>>piledFieldColor;
     Draw()
     {
-        field = zeroField;
-        piledField = zeroField;
         fieldColor = zeroField;
         piledFieldColor = zeroField;
     }
@@ -306,11 +289,9 @@ int main() {
     Draw draw;
     vector<Parts>piledParts;
 
-    //int kind = 0;
     while(1) { // game loop
         random_device rnd;
         int shapeIndex = rnd()%shapes.size();
-        //shapeIndex = 0; // for debug
         vector<vector<int>>shapeOfBlock;
         string shapeColor;
         bool breakflag = false;
@@ -387,7 +368,6 @@ int main() {
 
             //cin.get();
         }
-        //kind++;
     }
      return 0;
 }
