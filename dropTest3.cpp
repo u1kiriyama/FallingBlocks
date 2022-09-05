@@ -146,7 +146,6 @@ class Parts{
 };
 
 // shape of blocks
-//vector<vector<int>>shapeEmpty = {}; // to show blank field.
 struct SHAPES
 {
     vector<vector<int>>shape;
@@ -207,61 +206,6 @@ vector<SHAPES> initShapes() {
     return shapes;
 }
 
-/*
-class shapeI{
-    public:
-    vector<vector<int>>shape = {
-        {1,1,1}
-    };
-    string color = "\33[36m";
-};
-
-class shapeO{
-    public:
-    vector<vector<int>>shape = {
-        {1,1},
-        {1,1}
-    };
-    string color = "\33[33m";
-};
-
-class shapeS{
-    public:
-    vector<vector<int>>shape = {
-        {0,1,1},
-        {1,1,0}
-    };
-    string color = "\33[32m";
-};
-
-class shapeZ{
-    public:
-    vector<vector<int>>shapeZ = {
-        {1,1,0},
-        {0,1,1}
-    };
-    string color = "\33[31m";
-};
-
-class shapeJ{
-    public:
-    vector<vector<int>>shapeJ = {
-        {1,0,0},
-        {1,1,1}
-    };
-    string color = "\33[34m";
-};
-
-class shapeL{
-    public:
-    vector<vector<int>>shapeL = {
-        {0,0,1},
-        {1,1,1}
-    };
-    string color = "\33[4;34m";
-};
-*/
-
 class shapeT{
     public:
     vector<vector<int>>shape = {
@@ -307,23 +251,26 @@ class Draw{ // not good name -> Board
     }
 
     bool deleteRow(vector<vector<int>>&piledField) {
-        //bool complete = true;
-        for (int x = 0; x < fieldWidth; x++) {
-            if (piledField[fieldHeight-1][x] == 0) {
-                //complete = false;
-                return false;
-            }
-        }
-        for (int y = fieldHeight-1; y > 0; y--) {
+        for (int j = 0; j < fieldHeight; j++) {
+            bool complete = true;
             for (int x = 0; x < fieldWidth; x++) {
-                //cout << "y,x:" << y << "," << x << endl;
-                piledField[y][x] = piledField[y-1][x];
+                if (piledField[fieldHeight-1-j][x] == 0) {
+                    complete = false;
+                    continue;
+                }
             }
+            if (!complete) {continue;}
+            for (int y = fieldHeight-1-j; y > 0; y--) {
+                for (int x = 0; x < fieldWidth; x++) {
+                    piledField[y][x] = piledField[y-1][x];
+                }
+            }
+            for (int x = 0; x < fieldWidth; x++) {
+                piledField[0][x] = 0;
+            }
+            return true;
         }
-        for (int x = 0; x < fieldWidth; x++) {
-            piledField[0][x] = 0;
-        }
-        return true;
+        return false;
     }
 
 };
@@ -337,26 +284,13 @@ int main() {
     while(1) { // game loop
     random_device rnd;
     int randomnumber = rnd()%shapes.size();
-    //cout << randomnumber << endl;
-    //cout << shapes[randomnumber].color << "test" << endl;
+    randomnumber = 0; // for debug
         vector<vector<int>>shapeOfBlock;
         string shapeColor;
         bool breakflag = false;
         
         shapeOfBlock = shapes[randomnumber].shape;
         shapeColor = shapes[randomnumber].color;
-        /*
-        if (kind == 0) {
-            shapeT shapetype;
-            shapeOfBlock = shapetype.shape;
-            shapeColor = shapetype.color;
-        }else{
-            shapeI shapetype;
-            shapeOfBlock = shapetype.shape;
-            shapeColor = shapetype.color;
-        }
-        */
-        //shapeOfBlock = shapetype.shape;
         
         Parts block(shapeOfBlock, draw.piledField);
         // if no space to drop, break here and finish game.
@@ -377,8 +311,8 @@ int main() {
         cout << "Field" << endl;
         draw.drawField(draw.field, shapeColor);
         
-        while (draw.deleteRow(draw.piledField)) {
-        //if (draw.deleteRow(draw.piledField)) {
+        while (draw.deleteRow(draw.piledField)) { // if delete a row, redraw field.
+            cout << "while loop" << endl;
             block.mkPartsField();
             draw.mergeField(block.partsField);
 
