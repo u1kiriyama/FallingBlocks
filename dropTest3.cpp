@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <random>
 #include "kbhit.hpp"
 
 #define fieldHeight 10
@@ -127,7 +128,7 @@ class Parts{
         return c; // if fall c = ' '(space), otherwise null.
     }
 
-    void collisionCheck(const vector<vector<int>>&piledField) {
+    void collisionCheck(const vector<vector<int>>&piledField){ 
         if (BottomPos + 0 == fieldHeight) {
             alive = false;
             return;
@@ -136,7 +137,7 @@ class Parts{
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j < fieldWidth; j++) {
                 if (piledField[i][j] + partsField[i][j] == 2) {
-                    cout << "collision error" << endl;
+                    //cout << "collision error" << endl;
                     moveOK = false;
                 }
             }
@@ -145,15 +146,131 @@ class Parts{
 };
 
 // shape of blocks
-vector<vector<int>> shapeOfEmpty = {}; // to show blank field.
+//vector<vector<int>>shapeEmpty = {}; // to show blank field.
+struct SHAPES
+{
+    vector<vector<int>>shape;
+    string color;
+};
+vector<SHAPES> initShapes() {
+    vector<SHAPES>shapes =
+    {
+        {
+            {
+                {1,1,1}
+            },
+            "\33[36m"
+        },
+        {
+            {
+                {1,1},
+                {1,1}
+            },
+            "\33[33m"
+        },
+        {
+            {
+                {0,1,1},
+                {1,1,0}
+            },
+            "\33[32m"
+        },
+        {
+            {
+                {1,1,0},
+                {0,1,1}
+            },
+            "\33[31m"
+        },
+        {
+            {
+                {1,0,0},
+                {1,1,1}
+            },
+            "\33[34m"
+        },
+        {
+            {
+                {0,0,1},
+                {1,1,1}
+            },
+            "\33[4;34m"
+        },
+        {
+            {
+                {0,1,0},
+                {1,1,1},
+            },
+            "\33[4;35m"
+        }
+    };
+    return shapes;
+}
 
-vector<vector<int>> shapeOfTotsu = {
-  {0, 1, 0},
-  {1, 1, 1},
+/*
+class shapeI{
+    public:
+    vector<vector<int>>shape = {
+        {1,1,1}
+    };
+    string color = "\33[36m";
 };
-vector<vector<int>> shapeOfBar = {
-    {1, 1, 1}
+
+class shapeO{
+    public:
+    vector<vector<int>>shape = {
+        {1,1},
+        {1,1}
+    };
+    string color = "\33[33m";
 };
+
+class shapeS{
+    public:
+    vector<vector<int>>shape = {
+        {0,1,1},
+        {1,1,0}
+    };
+    string color = "\33[32m";
+};
+
+class shapeZ{
+    public:
+    vector<vector<int>>shapeZ = {
+        {1,1,0},
+        {0,1,1}
+    };
+    string color = "\33[31m";
+};
+
+class shapeJ{
+    public:
+    vector<vector<int>>shapeJ = {
+        {1,0,0},
+        {1,1,1}
+    };
+    string color = "\33[34m";
+};
+
+class shapeL{
+    public:
+    vector<vector<int>>shapeL = {
+        {0,0,1},
+        {1,1,1}
+    };
+    string color = "\33[4;34m";
+};
+*/
+
+class shapeT{
+    public:
+    vector<vector<int>>shape = {
+        {0,1,0},
+        {1,1,1},
+    };
+    string color = "\33[4;35m";
+};
+
 // 他の形も追加
 
 class Draw{ // not good name -> Board
@@ -167,10 +284,14 @@ class Draw{ // not good name -> Board
         piledField = zeroField;
     }
     
-    void drawField(const vector<vector<int>>&field) {
+    void drawField(const vector<vector<int>>&field, string color) {
         for (int i = 0; i < fieldHeight; i++) {
             for (int j = 0; j <  fieldWidth; j++) {
-                cout << field[i][j] ;
+                if (field[i][j] == 1) {
+                    cout << color;
+                }
+                cout << field[i][j];
+                cout << "\33[m"; // default color
             }
             cout << endl;
         }
@@ -208,18 +329,34 @@ class Draw{ // not good name -> Board
 };
 
 int main() {
+    // once
     Draw draw;
+    vector<SHAPES>shapes = initShapes();
 
     int kind = 0;
-    while(1) {
+    while(1) { // game loop
+    random_device rnd;
+    int randomnumber = rnd()%shapes.size();
+    //cout << randomnumber << endl;
+    //cout << shapes[randomnumber].color << "test" << endl;
         vector<vector<int>>shapeOfBlock;
+        string shapeColor;
         bool breakflag = false;
         
+        shapeOfBlock = shapes[randomnumber].shape;
+        shapeColor = shapes[randomnumber].color;
+        /*
         if (kind == 0) {
-            shapeOfBlock = shapeOfTotsu;
+            shapeT shapetype;
+            shapeOfBlock = shapetype.shape;
+            shapeColor = shapetype.color;
         }else{
-            shapeOfBlock = shapeOfBar;
+            shapeI shapetype;
+            shapeOfBlock = shapetype.shape;
+            shapeColor = shapetype.color;
         }
+        */
+        //shapeOfBlock = shapetype.shape;
         
         Parts block(shapeOfBlock, draw.piledField);
         // if no space to drop, break here and finish game.
@@ -234,22 +371,23 @@ int main() {
         draw.mergeField(block.partsField);
 
         cout << "piledField" << endl;
-        draw.drawField(draw.piledField);
+        draw.drawField(draw.piledField, shapeColor);
         cout << "partsField" << endl;
-        draw.drawField(block.partsField);
-        cout << "mergedField" << endl;
-        draw.drawField(draw.field);
+        draw.drawField(block.partsField, shapeColor);
+        cout << "Field" << endl;
+        draw.drawField(draw.field, shapeColor);
         
-        if (draw.deleteRow(draw.piledField)) {
+        while (draw.deleteRow(draw.piledField)) {
+        //if (draw.deleteRow(draw.piledField)) {
             block.mkPartsField();
             draw.mergeField(block.partsField);
 
             cout << "piledField" << endl;
-            draw.drawField(draw.piledField);
+            draw.drawField(draw.piledField, shapeColor);
             cout << "partsField" << endl;
-            draw.drawField(block.partsField);
+            draw.drawField(block.partsField, shapeColor);
             cout << "mergedField" << endl;
-            draw.drawField(draw.field);
+            draw.drawField(draw.field, shapeColor);
         }
 
         while(1){
@@ -262,7 +400,7 @@ int main() {
                 }
                 simBlock.collisionCheck(draw.piledField);
                 if (!simBlock.alive) {
-                    cout << "dead!" << endl;
+                    //cout << "dead!" << endl;
                     draw.piledField = draw.field; // make setter?
                     cout << "====================" << endl;
                     breakflag = true;
@@ -281,11 +419,11 @@ int main() {
             }
 
             cout << "piledField" << endl;
-            draw.drawField(draw.piledField);
+            draw.drawField(draw.piledField, shapeColor);
             cout << "partsField" << endl;
-            draw.drawField(block.partsField);
+            draw.drawField(block.partsField, shapeColor);
             cout << "mergedField" << endl;
-            draw.drawField(draw.field);
+            draw.drawField(draw.field, shapeColor);
 
             //cin.get();
         }
