@@ -4,15 +4,19 @@
 #include <cstdlib>
 #include <vector>
 #include <random>
+#include <time.h>
 #include "kbhit.hpp"
 
 #define fieldHeight 10
 #define fieldWidth 20
-#define dropcnt 10
+//#define dropcnt 10
+#define waitTime 1*1000*1000
 
 using namespace std;
 
 vector<vector<int>>zeroField(fieldHeight, vector<int>(fieldWidth, 0));
+clock_t startTime;
+clock_t previousTime;
 
 class Parts{
     public:
@@ -92,12 +96,22 @@ class Parts{
         // Do not erase this function for readability.
     }
 
-    char moveBlock(const vector<vector<int>>&piledField, const vector<vector<int>>&field){
+    char moveBlock(const vector<vector<int>>&piledField){
         cout << "fall:<space> rotate:UP DOWN RIGHT LEFT > ";
         char c = '\0';
         while(1) {
+            startTime = clock();
+            //cout << "startTime:" << startTime << endl;
+            //cout << "previous time:" << previousTime << endl;
+            if (clock() - previousTime > waitTime) {
+                cout << "force drop:" << clock() - previousTime << endl;
+                previousTime = clock();
+                down(piledField);
+                return 'a'; // return '\0' causes segmentation falt.
+            }
             if (kbhit()) {
                 //cout << endl;
+                previousTime = clock();
                 char c1 = getchar();
                 if (int(c1) == 0x1b) {
                     getchar();
@@ -288,7 +302,7 @@ int main() {
     // once
     Draw draw;
     vector<Parts>piledParts;
-
+    previousTime = clock();
     while(1) { // game loop
         random_device rnd;
         int shapeIndex = rnd()%shapes.size();
@@ -302,6 +316,8 @@ int main() {
         Parts block(shapeOfBlock, shapeIndex, draw.piledFieldColor);
         // if no space to drop, break here and finish game.
         block.collisionCheck(draw.piledFieldColor);
+
+
         if (!block.moveOK) {
             cout << " G A M E   O V E R " << endl;
             cout << "====================" << endl;
@@ -333,7 +349,7 @@ int main() {
 
         while(1){
             Parts simBlock = block;
-            char c = simBlock.moveBlock(draw.piledFieldColor, draw.fieldColor);
+            char c = simBlock.moveBlock(draw.piledFieldColor);
             cout << endl;
             do {
                 if (c == ' ') {
