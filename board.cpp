@@ -1,14 +1,17 @@
-
 #include <iostream>
 #include <vector>
-#include "shape.hpp"
 #include "common.hpp"
 #include "board.hpp"
 
 using namespace std;
 
 extern vector<vector<int>>zeroField;
-extern vector<SHAPES>shapes;
+extern struct Shape
+{
+    vector<vector<int>>shape;
+    string color;
+};
+extern vector<Shape>shapes;
 
 Board::Board()
 {

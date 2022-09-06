@@ -6,10 +6,11 @@
 #include <random>
 #include <time.h>
 #include "kbhit.hpp"
+#include "common.hpp"
 #include "shape.hpp"
+//#include "shapes.hpp"
 #include "parts.hpp"
 #include "board.hpp"
-#include "common.hpp"
 
 using namespace std;
 
@@ -17,6 +18,10 @@ vector<vector<int>>zeroField(fieldHeight, vector<int>(fieldWidth, 0));
 clock_t startTime;
 clock_t previousTime;
 int waitTime;
+
+vector<Shape>shapes = {
+    shapeT,shapeO,shapeS,shapeZ,shapeJ,shapeL,shapeT
+};
 
 int main() {
     // once

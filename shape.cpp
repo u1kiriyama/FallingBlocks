@@ -1,10 +1,8 @@
-using namespace std;
+#include <iostream>
+#include <vector>
+#include "shape.hpp"
 
-class Shape{
-    public:
-    vector<vector<int>>shape;
-    string color;
-};
+using namespace std;
 
 Shape shapeI = {
     {
@@ -59,4 +57,9 @@ Shape shapeT = {
         {1,1,1}
     },
     "\33[35m"
+};
+
+//vector<Shape>shapes = {
+shapes{
+    shapeT,shapeO,shapeS,shapeZ,shapeJ,shapeL,shapeT
 };
