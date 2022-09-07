@@ -57,7 +57,6 @@ int main() {
         // if no space to drop, break here and finish game.
         block.collisionCheck(board.piledFieldColor);
 
-
         if (!block.moveOK) {
             cout << " G A M E   O V E R " << endl;
             cout << "====================" << endl;
@@ -66,24 +65,11 @@ int main() {
 
         block.mkPartsField();
         board.mergeField(block.partsFieldColor);
-
-        cout << "piledField" << endl;
-        board.drawField(board.piledFieldColor);
-        cout << "partsField" << endl;
-        board.drawField(block.partsFieldColor);
-        cout << "Field(created)" << endl;
         board.drawField(board.fieldColor);
         
-        while (board.deleteRow(board.piledFieldColor)) { // if delete a row, reboard field.
-            cout << "while loop" << endl;
+        while (board.deleteRow(board.piledFieldColor)) { // if delete a row, redraw field.
             block.mkPartsField();
             board.mergeField(block.partsFieldColor);
-
-            cout << "piledField" << endl;
-            board.drawField(board.piledFieldColor);
-            cout << "partsField" << endl;
-            board.drawField(block.partsFieldColor);
-            cout << "Field(deleted)" << endl;
             board.drawField(board.fieldColor);
         }
 
@@ -96,9 +82,8 @@ int main() {
                     simBlock.down(board.piledFieldColor);
                 }
                 simBlock.collisionCheck(board.piledFieldColor);
-                if (!simBlock.alive) {
-                    //cout << "dead!" << endl;
-                    board.piledFieldColor = board.fieldColor; // make setter?
+                if (!simBlock.alive) { //dead
+                    board.updatePiledField();
                     cout << "====================" << endl;
                     breakflag = true;
                     break;
@@ -115,14 +100,7 @@ int main() {
                 block = simBlock;
             }
 
-            cout << "piledField" << endl;
-            board.drawField(board.piledFieldColor);
-            cout << "partsField" << endl;
-            board.drawField(block.partsFieldColor);
-            cout << "Field(moved)" << endl;
             board.drawField(board.fieldColor);
-
-            //cin.get();
         }
     }
      return 0;

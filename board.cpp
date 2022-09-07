@@ -67,3 +67,7 @@ bool Board::deleteRow(vector<vector<int>>&piledField) {
     }
     return false;
 }
+
+void Board::updatePiledField() {
+    piledFieldColor = fieldColor;
+}

@@ -77,7 +77,8 @@ void Parts::toBottom(){
 }
 
 char Parts::moveBlock(const vector<vector<int>>&piledField){
-    cout << "fall:<space> rotate:UP DOWN RIGHT LEFT > ";
+    cout << "fall:<space> rotate:UP DOWN RIGHT LEFT" << endl;
+    cout << ">";
     char c = '\0';
     while(1) {
         startTime = clock();
@@ -87,7 +88,6 @@ char Parts::moveBlock(const vector<vector<int>>&piledField){
             return 'a'; // return '\0' causes segmentation falt.
         }
         if (kbhit()) {
-            //cout << endl;
             previousTime = clock();
             char c1 = getchar();
             if (int(c1) == 0x1b) {
