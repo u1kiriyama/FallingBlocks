@@ -24,7 +24,7 @@ void Board::drawField(const vector<vector<int>>&field) {
     for (int i = 0; i < fieldHeight; i++) {
         for (int j = 0; j <  fieldWidth; j++) {
             if (field[i][j] == 0) {
-                color = "\33[30m\33[100m"; // zero is glay
+                color = "\33[30m\33[100m";
             }else if (field[i][j]-1 < shapes.size()) {
                 color = shapes[field[i][j]-1].color;
             }

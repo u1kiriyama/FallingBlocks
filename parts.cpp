@@ -43,8 +43,6 @@ bool Parts::rotate(const vector<vector<int>>&piledField){
 
     // ceiling check
     if (BottomPos+1 < shapeOfParts.size()) {
-        // 天井に触るような回転をしようとした場合、BottomPosが更新されるが、
-        // 更新後、collisionCheckに引っかかる場合、shapeOfPartsが更新されないので既存ブロックにめりこむ。
         BottomPos = shapeOfParts.size() - 1;
     }
     // right wall check

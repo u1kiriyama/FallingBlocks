@@ -67,7 +67,8 @@ int main() {
         board.mergeField(block.partsFieldColor);
         board.drawField(board.fieldColor);
         
-        while (board.deleteRow(board.piledFieldColor)) { // if delete a row, redraw field.
+        // if delete a row, redraw field.
+        while (board.deleteRow(board.piledFieldColor)) {
             block.mkPartsField();
             board.mergeField(block.partsFieldColor);
             board.drawField(board.fieldColor);
