@@ -1,5 +1,3 @@
-//g++ -std=c++20 dropTest.cpp -o dropTest.out
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
