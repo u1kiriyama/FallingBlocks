@@ -5,10 +5,8 @@
 #include <cstdlib>
 #include <random>
 #include <time.h>
-#include "kbhit.hpp"
 #include "common.hpp"
 #include "shape.hpp"
-//#include "shapes.hpp"
 #include "parts.hpp"
 #include "board.hpp"
 
@@ -20,7 +18,7 @@ clock_t previousTime;
 int waitTime;
 
 vector<Shape>shapes = {
-    shapeT,shapeO,shapeS,shapeZ,shapeJ,shapeL,shapeT
+    shapeI,shapeO,shapeS,shapeZ,shapeJ,shapeL,shapeT
 };
 
 int main() {

@@ -1,6 +1,3 @@
-#ifndef board_hpp
-#define board_hpp
-
 using namespace std;
 
 class Board{
@@ -14,5 +11,3 @@ class Board{
     void mergeField(const vector<vector<int>>&partsField);
     bool deleteRow(vector<vector<int>>&piledField);
 };
-
-#endif
