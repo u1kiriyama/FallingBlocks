@@ -7,4 +7,4 @@ Thread model: posix
 InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 ```
 
-```make``` makes ```tetris.out```.
+```make``` makes ```FallingBlocks.out```.
