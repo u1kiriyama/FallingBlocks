@@ -57,7 +57,7 @@ int main() {
         // if no space to drop, break here and finish game.
         block.collisionCheck(board.piledFieldColor);
 
-        if (!block.moveOK) {
+        if (!block.getmoveOK()) {
             cout << " G A M E   O V E R " << endl;
             cout << "====================" << endl;
             return 0;
@@ -83,24 +83,27 @@ int main() {
                     simBlock.down(board.piledFieldColor);
                 }
                 simBlock.collisionCheck(board.piledFieldColor);
-                if (!simBlock.alive) { //dead
+                if (!simBlock.getalive()) { //dead
                     board.updatePiledField();
                     cout << "====================" << endl;
                     breakflag = true;
                     break;
                 }
-                if (simBlock.moveOK) {
+                if (simBlock.getmoveOK()) {
                     simBlock.mkPartsField();
                     board.mergeField(simBlock.partsFieldColor);
+                    board.drawField(board.fieldColor); //
                 }
             } while(c == ' ');
             if (breakflag) {
                 break;
             }
-            if (simBlock.moveOK) {
+            if (simBlock.getmoveOK()) {
                 block = simBlock;
             }
 
+            simBlock.mkPartsField();//
+            board.mergeField(simBlock.partsFieldColor);//
             board.drawField(board.fieldColor);
         }
     }

@@ -19,6 +19,14 @@ Parts::Parts(vector<vector<int>>shape, const int idx, const vector<vector<int>>&
     BottomPos = height-1;
 }
 
+bool Parts::getmoveOK(){
+    return Parts::moveOK;
+}
+
+bool Parts::getalive(){
+    return Parts::alive;
+}
+
 void Parts::mkPartsField(){
     partsFieldColor = zeroField;
     for (int x = 0; x < shapeOfParts[0].size(); x++) {
