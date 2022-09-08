@@ -2,7 +2,7 @@
 #include <vector>
 #include "common.hpp"
 #include "board.hpp"
-#include "parts.hpp"
+//#include "parts.hpp"
 
 using namespace std;
 

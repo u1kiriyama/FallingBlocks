@@ -3,8 +3,6 @@ using namespace std;
 
 class Board{
 public:
-    //vector<vector<int>>field;
-    //vector<vector<int>>piledField;
     vector<vector<int>>fieldColor;
     vector<vector<int>>piledFieldColor;
 

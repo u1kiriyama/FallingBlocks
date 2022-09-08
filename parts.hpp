@@ -25,6 +25,5 @@ public:
     void down(const vector<vector<int>>&piledField);
     void toBottom();
     char moveBlock(const vector<vector<int>>&piledField);
-    //void collisionCheck(const vector<vector<int>>&piledField);
 };
 #endif

@@ -52,9 +52,7 @@ int main() {
         shapeColor = shapes[shapeIndex].color;
         
         Parts block(shapeOfBlock, shapeIndex, board.piledFieldColor);
-        // if no space to drop, break here and finish game.
 
-        //block.collisionCheck(board.piledFieldColor);
         board.collisionCheck(board.piledFieldColor, block);
 
         if (!block.getmoveOK()) {
@@ -63,7 +61,6 @@ int main() {
             return 0;
         }
 
-        //block.mkPartsField();
         cout << "initial" << endl;
         board.mkPartsField(block);
         board.mergeField(block.partsFieldColor);
@@ -71,7 +68,6 @@ int main() {
         
         // if delete a row, redraw field.
         while (board.deleteRow(board.piledFieldColor)) {
-            //block.mkPartsField();
             cout << "completed a row";
             board.mkPartsField(block);
             board.mergeField(block.partsFieldColor);
@@ -81,9 +77,10 @@ int main() {
         while(1){
             Parts simBlock = block; // create a block for sim of next step.
             char c = simBlock.moveBlock(board.piledFieldColor);
+            board.collisionCheck(board.piledFieldColor, simBlock);
             cout << endl;
             do {
-                if (c == ' ') {
+                if (c == ' ') { // fall calls down repeatedly.
                     simBlock.down(board.piledFieldColor);
                     board.collisionCheck(board.piledFieldColor, simBlock);
                     if (!simBlock.moveOK)
@@ -91,53 +88,27 @@ int main() {
                         simBlock.alive = false;
                     }
                 }
-                board.collisionCheck(board.piledFieldColor, simBlock);
-                if (int(c) == 66) {
+                if (int(c) == 66) { // When down and if collided, kill the block.
                     if (!simBlock.moveOK)
                     {
                         simBlock.alive = false;
                     }
                 }
-                //simBlock.collisionCheck(board);
                 if (!simBlock.getalive()) { //dead
                     board.updatePiledField();
-                    cout << "====================" << endl;
                     breakflag = true;
                     break;
                 }
                 if (simBlock.getmoveOK()) {
-                    /*
-                    cout << "moveOK" << endl;
-                    board.mkPartsField(simBlock);
-                    board.mergeField(simBlock.partsFieldColor);
-                    board.drawField(board.fieldColor); //
-                    */
                     board.mkPartsField(simBlock);
                     board.mergeField(simBlock.partsFieldColor);
                     block = simBlock;
-                }else{
-                    /*
-                    board.mkPartsField(simBlock);
-                    board.mergeField(simBlock.partsFieldColor);
-                    breakflag = true;
-                    break;
-                    */
                 }
             } while(c == ' ');
             if (breakflag) {
                 break;
             }
-            if (simBlock.getmoveOK()) {
-                cout << "moveOK. update block" << endl;
-                //block = simBlock;
-                /*
-                board.mkPartsField(simBlock); //
-                board.mergeField(simBlock.partsFieldColor);//
-                board.drawField(board.fieldColor);
-                */
-            }
-
-            cout << "last" << endl;
+            cout << "moved" << endl;
             board.mkPartsField(block); //
             board.mergeField(block.partsFieldColor);//
             board.drawField(board.fieldColor);
