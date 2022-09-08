@@ -2,6 +2,7 @@
 #include <vector>
 #include "common.hpp"
 #include "board.hpp"
+#include "parts.hpp"
 
 using namespace std;
 
@@ -37,6 +38,15 @@ void Board::drawField(const vector<vector<int>>&field) {
     cout << "--------------------" << endl;
 }
 
+void Board::mkPartsField(Parts &block){
+    block.partsFieldColor = zeroField;
+    for (int x = 0; x < block.shapeOfParts[0].size(); x++) {
+        for (int y = 0; y < block.shapeOfParts.size(); y++) {
+            block.partsFieldColor[block.BottomPos-y][block.LeftPos+x] = (block.shapeIndex + 1) * block.shapeOfParts[y][x];
+        }
+    }
+}
+
 void Board::mergeField(const vector<vector<int>>&partsField) {
     for (int i = 0; i < fieldHeight; i++) {
         for (int j = 0; j < fieldWidth; j++) {
@@ -70,4 +80,34 @@ bool Board::deleteRow(vector<vector<int>>&piledField) {
 
 void Board::updatePiledField() {
     piledFieldColor = fieldColor;
+}
+
+void Board::collisionCheck(const vector<vector<int>>&piledField, Parts &block){ 
+    if (block.BottomPos + 0 == fieldHeight) {
+        block.alive = false;
+        return;
+    }
+    Board::mkPartsField(block);
+
+    // ZeroOneField
+    vector<vector<int>>ZeroOnePiledField = zeroField;
+    vector<vector<int>>ZeroOnePartsField = zeroField;
+    for (int i = 0; i < fieldHeight; i++) {
+        for (int j = 0; j < fieldWidth; j++) {
+            if (piledField[i][j] > 0) {
+                ZeroOnePiledField[i][j] = 1;
+            }
+            if (block.partsFieldColor[i][j] > 0) {
+                ZeroOnePartsField[i][j] = 1;
+            }
+        }
+    }
+
+    for (int i = 0; i < fieldHeight; i++) {
+        for (int j = 0; j < fieldWidth; j++) {
+            if (ZeroOnePiledField[i][j] + ZeroOnePartsField[i][j] > 1) {
+                block.moveOK = false;
+            }
+        }
+    }
 }

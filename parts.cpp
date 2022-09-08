@@ -3,6 +3,7 @@
 #include "kbhit.hpp"
 #include "common.hpp"
 #include "parts.hpp"
+#include "board.hpp"
 
 using namespace std;
 
@@ -10,6 +11,7 @@ extern vector<vector<int>>zeroField;
 extern clock_t startTime;
 extern clock_t previousTime;
 extern int waitTime;
+//extern void collisionCheck(const vector<vector<int>>&piledField, Parts &block);
 
 Parts::Parts(vector<vector<int>>shape, const int idx, const vector<vector<int>>&piledField){
     shapeIndex = idx;
@@ -26,7 +28,7 @@ bool Parts::getmoveOK(){
 bool Parts::getalive(){
     return Parts::alive;
 }
-
+/*
 void Parts::mkPartsField(){
     partsFieldColor = zeroField;
     for (int x = 0; x < shapeOfParts[0].size(); x++) {
@@ -35,7 +37,7 @@ void Parts::mkPartsField(){
         }
     }
 }
-
+*/
 bool Parts::rotate(const vector<vector<int>>&piledField){
     vector<vector<int>>tmp(width, vector<int>(height));
     // rotation
@@ -72,10 +74,12 @@ void Parts::toRight(const vector<vector<int>>&piledField){
 }
 void Parts::down(const vector<vector<int>>&piledField){
     BottomPos++;
-    collisionCheck(piledField);
+    /*
+    collisionCheck(piledField, this);
     if (!moveOK) {
         alive = false;
     }
+    */
 }
 void Parts::toBottom(){
     // not used. down is called repeatedly instead.
@@ -111,6 +115,7 @@ char Parts::moveBlock(const vector<vector<int>>&piledField){
                 }else{
 
                 }
+                c = c3;
                 break;
             }
             if (c1 == ' ') {
@@ -122,13 +127,13 @@ char Parts::moveBlock(const vector<vector<int>>&piledField){
     }
     return c; // if fall c = ' '(space), otherwise null.
 }
-
+/*
 void Parts::collisionCheck(const vector<vector<int>>&piledField){ 
     if (BottomPos + 0 == fieldHeight) {
         alive = false;
         return;
     }
-    Parts::mkPartsField();
+    //Parts::mkPartsField();
 
     // ZeroOneField
     vector<vector<int>>ZeroOnePiledField = zeroField;
@@ -152,3 +157,4 @@ void Parts::collisionCheck(const vector<vector<int>>&piledField){
         }
     }
 }
+*/
